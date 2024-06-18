@@ -71,7 +71,15 @@ class AppointmentAdmin {
   }
 
   showAppointment() {
-    const TEXT_CLASSES = ['font-normal', 'mb-3', 'text-gray-700', 'normal-case'];
+    const TEXT_CLASSES = [
+      'font-normal', 'mb-3',
+      'text-gray-700', 'normal-case'
+    ];
+
+    const BUTTON_CLASSES = [
+      'py-2', 'px-10', 'text-white', 'font-bold', 'uppercase',
+      'rounded-lg', 'flex', 'items-center', 'gap-2'
+    ];
 
     // Clear HTML
     while (container.firstChild) {
@@ -105,11 +113,40 @@ class AppointmentAdmin {
       symptoms.classList.add(...TEXT_CLASSES);
       symptoms.innerHTML = `<span class="font-bold uppercase">Síntomas: </span> ${appointment.symptoms}`;
 
+      const editBtn = document.createElement('button');
+      editBtn.classList.add(
+        'bg-indigo-600', 'hover:bg-indigo-700', ...BUTTON_CLASSES
+      );
+
+      editBtn.innerHTML = `
+      Editar
+      <svg fill="none" class="h-5 w-5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+        <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+      </svg>`;
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.classList.add(
+        'bg-red-600', 'hover:bg-red-700', ...BUTTON_CLASSES
+      );
+
+      deleteBtn.innerHTML = `
+      Eliminar
+      <svg fill="none" class="h-5 w-5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+        <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>`;
+
+      const btnContainer = document.createElement('DIV');
+      btnContainer.classList.add('flex', 'justify-between', 'mt-10');
+      btnContainer.appendChild(editBtn);
+      btnContainer.appendChild(deleteBtn);
+
       divAppointment.appendChild(pet);
       divAppointment.appendChild(owner);
       divAppointment.appendChild(email);
       divAppointment.appendChild(date);
       divAppointment.appendChild(symptoms);
+      divAppointment.appendChild(btnContainer);
+
       container.appendChild(divAppointment);
     });
   }
@@ -136,19 +173,22 @@ function submitValues(e) {
     return;
   }
 
-  appointmentAdmin.addAppointment(appointmentObj);
+  appointmentAdmin.addAppointment({...appointmentObj});
+  form.reset();
+  resetAppointmentObj();
+  new Notification({
+    message: 'Cita agregada con éxito',
+    type: 'success'
+  });
+}
 
-  // // Get form data
-  // appointment.paciente = petInput.value;
-  // appointment.propietario = ownerInput.value;
-  // appointment.email = emailInput.value;
-  // appointment.fecha = dateInput.value;
-  // appointment.symptoms = symptomsInput.value;
-
-  // // Clear form inputs
-  // petInput.value = '';
-  // ownerInput.value = '';
-  // emailInput.value = '';
-  // dateInput.value = '';
-  // symptomsInput.value = '';
+function resetAppointmentObj() {
+  // Clear form inputs
+  Object.assign(appointmentObj, {
+    paciente: '',
+    propietario: '',
+    email: '',
+    fecha: '',
+    symptoms: ''
+  });
 }
