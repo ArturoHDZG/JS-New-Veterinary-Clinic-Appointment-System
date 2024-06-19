@@ -10,6 +10,7 @@ const container = document.querySelector('#citas');
 
 //* Appointment Object
 const appointmentObj = {
+  id: generateId(),
   paciente: '',
   propietario: '',
   email: '',
@@ -71,6 +72,7 @@ class AppointmentAdmin {
   }
 
   showAppointment() {
+    // Constants
     const TEXT_CLASSES = [
       'font-normal', 'mb-3',
       'text-gray-700', 'normal-case'
@@ -113,9 +115,10 @@ class AppointmentAdmin {
       symptoms.classList.add(...TEXT_CLASSES);
       symptoms.innerHTML = `<span class="font-bold uppercase">Síntomas: </span> ${appointment.symptoms}`;
 
+      // Create Edit Button
       const editBtn = document.createElement('button');
       editBtn.classList.add(
-        'bg-indigo-600', 'hover:bg-indigo-700', ...BUTTON_CLASSES
+        'edit-btn', 'bg-indigo-600', 'hover:bg-indigo-700', ...BUTTON_CLASSES
       );
 
       editBtn.innerHTML = `
@@ -123,10 +126,13 @@ class AppointmentAdmin {
       <svg fill="none" class="h-5 w-5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
         <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
       </svg>`;
+      const cloneAppointment = structuredClone(appointment);
+      editBtn.onclick = () => loadEdit(cloneAppointment);
 
+      // Create Delete Button
       const deleteBtn = document.createElement('button');
       deleteBtn.classList.add(
-        'bg-red-600', 'hover:bg-red-700', ...BUTTON_CLASSES
+        'delete-btn', 'bg-red-600', 'hover:bg-red-700', ...BUTTON_CLASSES
       );
 
       deleteBtn.innerHTML = `
@@ -135,6 +141,7 @@ class AppointmentAdmin {
         <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
       </svg>`;
 
+      // Insert Elements into HTML
       const btnContainer = document.createElement('DIV');
       btnContainer.classList.add('flex', 'justify-between', 'mt-10');
       btnContainer.appendChild(editBtn);
@@ -185,10 +192,20 @@ function submitValues(e) {
 function resetAppointmentObj() {
   // Clear form inputs
   Object.assign(appointmentObj, {
+    id: generateId(),
     paciente: '',
     propietario: '',
     email: '',
     fecha: '',
     symptoms: ''
   });
+}
+
+function generateId() {
+  const BASE_RANDOM = 36;
+  return `${Math.random().toString(BASE_RANDOM).substring(2)}${Date.now()}`;
+}
+
+function loadEdit(appointment) {
+  console.log(appointment);
 }
