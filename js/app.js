@@ -6,7 +6,11 @@ const dateInput = document.querySelector('#fecha');
 const symptomsInput = document.querySelector('#symptoms');
 
 const form = document.querySelector('#formulario-cita');
+const formSubmit = document.querySelector('#formulario-cita input[type="submit"]');
 const container = document.querySelector('#citas');
+
+//* GLobal Variables
+let editMode = false;
 
 //* Appointment Object
 const appointmentObj = {
@@ -37,7 +41,7 @@ class Notification {
   }
 
   showNotification() {
-    const ALERT_DURATION = 3000;
+    const ALERT_DURATION = 5000;
     const notification = document.createElement('DIV');
 
     notification.textContent = this.message;
@@ -86,6 +90,13 @@ class AppointmentAdmin {
     // Clear HTML
     while (container.firstChild) {
       container.removeChild(container.firstChild);
+    }
+
+    // Check if there are appointments
+    if (this.appointments.length === 0) {
+      container.innerHTML = `<p class="text-xl mt-5 mb-10 text-center">No Hay Pacientes</p>`;
+
+      return;
     }
 
     // Insert appointments
@@ -140,6 +151,7 @@ class AppointmentAdmin {
       <svg fill="none" class="h-5 w-5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
         <path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
       </svg>`;
+      deleteBtn.onclick = () => this.deleteAppointment(appointment.id);
 
       // Insert Elements into HTML
       const btnContainer = document.createElement('DIV');
@@ -156,6 +168,20 @@ class AppointmentAdmin {
 
       container.appendChild(divAppointment);
     });
+  }
+
+  editAppointment(updatedAppointment) {
+    this.appointments = this.appointments.map(
+      appointment => appointment.id === updatedAppointment.id ? updatedAppointment : appointment
+    );
+
+    this.showAppointment();
+  }
+
+  deleteAppointment(id) {
+    this.appointments = this.appointments.filter(appointment => appointment.id !== id);
+
+    this.showAppointment();
   }
 }
 
@@ -180,13 +206,26 @@ function submitValues(e) {
     return;
   }
 
-  appointmentAdmin.addAppointment({...appointmentObj});
+  if (editMode) {
+    appointmentAdmin.editAppointment({ ...appointmentObj });
+    new Notification({
+      message: 'Cita editada con éxito',
+      type: 'success'
+    });
+
+    editMode = false;
+
+  } else {
+    appointmentAdmin.addAppointment({ ...appointmentObj });
+    new Notification({
+      message: 'Cita agregada con éxito',
+      type: 'success'
+    });
+  }
+
   form.reset();
   resetAppointmentObj();
-  new Notification({
-    message: 'Cita agregada con éxito',
-    type: 'success'
-  });
+  formSubmit.value = 'Registrar Paciente';
 }
 
 function resetAppointmentObj() {
@@ -207,5 +246,15 @@ function generateId() {
 }
 
 function loadEdit(appointment) {
-  console.log(appointment);
+  Object.assign(appointmentObj, appointment);
+
+  petInput.value = appointment.paciente;
+  ownerInput.value = appointment.propietario;
+  emailInput.value = appointment.email;
+  dateInput.value = appointment.fecha;
+  symptomsInput.value = appointment.symptoms;
+
+  editMode = true;
+
+  formSubmit.value = 'Guardar Cambios';
 }
