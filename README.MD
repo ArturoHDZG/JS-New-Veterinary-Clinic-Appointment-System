@@ -25,6 +25,6 @@ This project is a learning exercise aimed at creating an efficient and user-frie
 
 ## Live Demo
 
-Check out the live demo of the New Veterinary Clinic Appointment System [here](https://).
+Check out the live demo of the New Veterinary Clinic Appointment System [here](https://arturohdzg.github.io/JS-New-Veterinary-Clinic-Appointment-System/).
 
 Feel free to explore the code and provide feedback. Happy coding! 🚀
